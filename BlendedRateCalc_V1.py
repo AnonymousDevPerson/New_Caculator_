@@ -33,7 +33,6 @@ class ResourceTracker:
 
             total_billable_amount += rate_with_discount * quantity
             total_quantity += quantity
-
         if total_quantity == 0:
             return 0.0
 
@@ -135,20 +134,20 @@ class ResourceTrackerApp(tk.Tk):
         if role_name in self.resource_tracker.roles:
             del self.resource_tracker.roles[role_name]
             self.calculate_blended_rate()
-        else:
-            print(f"Role '{role_name}' not found. Cannot delete.")
 
     def calculate_blended_rate(self):
         blended_rate = self.resource_tracker.calculate_blended_rate()
         self.blended_rate_label.config(text=f"Blended billable rate: ${blended_rate:.2f} per hour")
 
-        people_per_role_text = ""
+        self.people_per_role_listbox.delete(0, tk.END)  # Clear the listbox
+
         for role_data in self.resource_tracker.roles.values():
             role = role_data['role']
             quantity = role_data['quantity']
-            people_per_role_text += f"{role.name}: {quantity}\n"
+            self.people_per_role_listbox.insert(tk.END, f"{role.name}: {quantity}")
 
-        self.people_per_role_label.config(text=people_per_role_text)
+
+            self.people_per_role_listbox.Listbox(list=people_per_role_listbox)
 
     def calculate_total_cost(self):
         num_hours_str = self.num_hours_entry.get()
@@ -304,14 +303,15 @@ class ResourceTrackerApp(tk.Tk):
 
         # People for each role
         people_per_role_label = tk.Label(self, text="People per Role:")
-        people_per_role_label.grid(row=0, column=1, padx=10, pady=6, sticky=tk.E)
+        people_per_role_label.grid(row=0, column=2, padx=4, pady=6, sticky=tk.E)
 
-        self.people_per_role_label = tk.Label(self, text="")
-        self.people_per_role_label.grid(row=0, column=2, padx=8, pady=6, sticky=tk.W)
+        self.people_per_role_listbox = tk.Listbox(self, selectmode=tk.SINGLE, height=12, width=35)
+        self.people_per_role_listbox.grid(row=1, column=2, padx=8, pady=6, sticky=tk.W)
 
         # Restart Button
         restart_button = tk.Button(self, text="Reset and Start Over", command=self.restart)
         restart_button.grid(row=26, column=0, columnspan=2, padx=10, pady=6)
+
 
     def restart(self):
         self.resource_tracker.roles = {}
